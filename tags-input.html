@@ -3,8 +3,17 @@
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../iron-input/iron-input.html">
 <link rel="import" href="../paper-input/paper-input.html">
+<!--
 <link rel="import" href="tag-iconset.html">
+-->
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
 
+<iron-iconset-svg size="24" name="tag">
+<svg><defs>
+<g id="remove"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></g>
+</defs></svg>
+</iron-iconset-svg>
 <!--
 `tags-input`
 Input element for defining one or more tags.
@@ -51,7 +60,19 @@ Custom property | Description | Default
       }
     </style>
     <div class="container">
-      <div class="tags">
+       <paper-input
+        id="input"
+        hidden$="[[noEdit]]"
+        label="[[label]]"
+        autofocus$="[[autofocus]]"
+        required$="[[required]]"
+        placeholder="[[placeholder]]"
+        minlength="[[minLength]]"
+        maxlength="[[maxLength]]"
+        on-keydown="_onInputKeydown"
+        value="{{tag}}">
+      </paper-input>
+     <div class="tags">
         <template is="dom-repeat" items="[[tags]]" as="tag">
           <div class="tag">
             <span>[[tag]]</span>
@@ -65,17 +86,6 @@ Custom property | Description | Default
           </div>
         </template>
       </div>
-      <paper-input
-        id="input"
-        hidden$="[[noEdit]]"
-        no-label-float
-        label="[[_label]]"
-        autofocus$="[[autofocus]]"
-        minlength="[[minLength]]"
-        maxlength="[[maxLength]]"
-        on-keydown="_onInputKeydown"
-        value="{{tag}}">
-      </paper-input>
     </div>
   </template>
 
@@ -92,6 +102,10 @@ Custom property | Description | Default
         /**
          * The current set of tags.
          */
+        tag: String,
+        placeholder: {
+          type: String,
+        },
         tags: {
           type: Array,
           value: function() { return [] },
@@ -114,6 +128,15 @@ Custom property | Description | Default
          * Bound to the input's `autofocus` attribute.
          */
         autofocus: {
+          type: Boolean,
+          value: false
+        },
+
+        required: {
+          type: Boolean,
+          value: false,
+        },
+        wasRequired: {
           type: Boolean,
           value: false
         },
@@ -140,10 +163,6 @@ Custom property | Description | Default
          * The maximum length of a tag.
          */
         maxLength: Number,
-        _label: {
-          type: String,
-          computed: '_computeLabel(label, tagLabel, tags.length)'
-        }
       },
 
       /**
@@ -155,6 +174,7 @@ Custom property | Description | Default
             && (!this.maxLength || tag.length <= this.maxLength)
             && (this.allowDuplicates || !this.tags.includes(tag))) {
           this.push('tags', tag);
+          this._tagsChanged();
           this.fire('tag-added', tag);
           return true;
         } else {
@@ -169,7 +189,10 @@ Custom property | Description | Default
        */
       remove: function(index) {
         var removed = this.splice('tags', index, 1);
-        if (removed.length > 0) this.fire('tag-removed', removed[0]);
+        if (removed.length > 0) {
+          this._tagsChanged();
+          this.fire('tag-removed', removed[0]);
+        }
       },
 
       /**
@@ -220,19 +243,30 @@ Custom property | Description | Default
               || e.keyCode === 19       // pause/break
               || e.keyCode === 27       // esc
               || e.keyCode === 32))) {  // space
-          var tag = this.tag.trim();
-          if (tag) {
+          this.tag = this.tag.trim();
+          if (this.tag) {
             e.preventDefault();
             // console.log('onadd', e, tag);
-            this.tag = this.add(tag) ? '' : tag.trim();
+            this.tag = this.add(this.tag) ? '' : this.tag.trim();
             this.focus();
           }
         }
       },
 
-      _computeLabel: function(label, tagLabel, len) {
-        return len == 0 ? (label || tagLabel) : tagLabel;
-      }
+      _tagsChanged: function () {
+        if(this.tags.length > 0) {
+          this.placeholder = "";
+          if(this.required) {
+            this.wasRequired = true;
+            this.required = false;
+          }
+        } else {
+          if(this.wasRequired) {
+            this.required = true;
+          }
+        }
+      },
+
 
 
       /**

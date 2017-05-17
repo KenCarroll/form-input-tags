@@ -1,11 +1,14 @@
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/jifalops/tags-input)
+
 
 # tags-input
 Input element for defining one or more tags.
 
-## Installation
+## Installation & demo
 ```
-bower install --save jifalops/tags-input
+Clone or fork
+bower install
+polymer serve
+http://localhost:8080/components/tags-input/demo/
 ```
 
 <!-- ## Usage -->
@@ -28,20 +31,12 @@ bower install --save jifalops/tags-input
 <tags-input autofocus label="Tags"></tags-input>
 ```
 
-Full demo:
-[webcomponents.org](https://www.webcomponents.org/element/jifalops/tags-input/demo/demo/index.html)
-| [github](https://jifalops.github.io/tags-input/components/tags-input/demo/).
+##Full demo:
 
-API: [webcomponents.org](https://www.webcomponents.org/element/jifalops/tags-input/tags-input)
-| [github](https://jifalops.github.io/tags-input).
 
 ## Contributing
 
-1. Fork it on Github.
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request
+
 
 ## License
 
